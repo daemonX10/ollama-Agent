@@ -1,6 +1,8 @@
-def main():
-    print("Hello from ai-recruiter-agency!")
+import streamlit as st
+import asyncio
+import os 
+from datetime import datetime
+from pathlib import Path
+from streamlit_option_menu import option_menu
+from agents.orchestrator import OrchestratorAgent
 
-
-if __name__ == "__main__":
-    main()
