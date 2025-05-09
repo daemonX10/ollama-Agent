@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentAI - Sign Up</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%);
+        }
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(90deg, #4F46E5, #7C3AED);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-800 bg-gray-50 flex items-center justify-center min-h-screen py-8">
+    <div class="container px-4 mx-auto">
+        <div class="max-w-2xl mx-auto">
+            <!-- Logo -->
+            <div class="text-center mb-8 animate-fade-in">
+                <a href="index.html" class="inline-block">
+                    <span class="text-3xl font-bold text-gradient">TalentAI</span>
+                </a>
+            </div>
+            
+            <!-- Signup Form -->
+            <div class="bg-white rounded-lg shadow-md p-8 animate-fade-in delay-100">
+                <h2 class="text-2xl font-bold mb-6 text-center">Create Your Account</h2>
+                
+                <!-- Account Type Selector -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-3">I am a:</label>
+                    <div class="flex space-x-4">
+                        <div class="flex-1">
+                            <input type="radio" id="candidate" name="accountType" value="candidate" class="hidden peer" checked>
+                            <label for="candidate" class="flex items-center justify-center p-4 border border-gray-300 rounded-md cursor-pointer peer-checked:border-indigo-600 peer-checked:bg-indigo-50 hover:bg-gray-50">
+                                <div class="text-center">
+                                    <i class="fas fa-user-tie text-xl mb-2"></i>
+                                    <span class="block">Job Seeker</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="flex-1">
+                            <input type="radio" id="recruiter" name="accountType" value="recruiter" class="hidden peer">
+                            <label for="recruiter" class="flex items-center justify-center p-4 border border-gray-300 rounded-md cursor-pointer peer-checked:border-indigo-600 peer-checked:bg-indigo-50 hover:bg-gray-50">
+                                <div class="text-center">
+                                    <i class="fas fa-building text-xl mb-2"></i>
+                                    <span class="block">Employer</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <form id="signupForm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="firstName" class="block text-gray-700 text-sm font-medium mb-2">First Name</label>
+                            <input type="text" id="firstName" name="firstName" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                        </div>
+                        <div>
+                            <label for="lastName" class="block text-gray-700 text-sm font-medium mb-2">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="email" class="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-gray-400"></i>
+                            </div>
+                            <input type="email" id="email" name="email" class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="password" class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-gray-400"></i>
+                                </div>
+                                <input type="password" id="password" name="password" class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <button type="button" class="togglePassword text-gray-400 hover:text-gray-600 focus:outline-none">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500">Must be at least 8 characters</p>
+                        </div>
+                        <div>
+                            <label for="confirmPassword" class="block text-gray-700 text-sm font-medium mb-2">Confirm Password</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-gray-400"></i>
+                                </div>
+                                <input type="password" id="confirmPassword" name="confirmPassword" class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <button type="button" class="togglePassword text-gray-400 hover:text-gray-600 focus:outline-none">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Conditional fields for Job Seekers -->
+                    <div id="candidateFields" class="mb-6">
+                        <div class="mb-6">
+                            <label for="jobTitle" class="block text-gray-700 text-sm font-medium mb-2">Current Job Title</label>
+                            <input type="text" id="jobTitle" name="jobTitle" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Primary Skills (select up to 5)</label>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600" name="skills[]" value="javascript">
+                                    <span class="ml-2 text-sm">JavaScript</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600" name="skills[]" value="python">
+                                    <span class="ml-2 text-sm">Python</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600" name="skills[]" value="react">
+                                    <span class="ml-2 text-sm">React</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600" name="skills[]" value="java">
+                                    <span class="ml-2 text-sm">Java</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600" name="skills[]" value="product">
+                                    <span class="ml-2 text-sm">Product Management</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600" name="skills[]" value="design">
+                                    <span class="ml-2 text-sm">UX/UI Design</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600" name="skills[]" value="marketing">
+                                    <span class="ml-2 text-sm">Marketing</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600" name="skills[]" value="sales">
+                                    <span class="ml-2 text-sm">Sales</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600" name="skills[]" value="data">
+                                    <span class="ml-2 text-sm">Data Science</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Conditional fields for Employers -->
+                    <div id="recruiterFields" class="mb-6 hidden">
+                        <div class="mb-6">
+                            <label for="companyName" class="block text-gray-700 text-sm font-medium mb-2">Company Name</label>
+                            <input type="text" id="companyName" name="companyName" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        
+                        <div>
+                            <label for="companySize" class="block text-gray-700 text-sm font-medium mb-2">Company Size</label>
+                            <select id="companySize" name="companySize" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">Select company size</option>
+                                <option value="1-10">1-10 employees</option>
+                                <option value="11-50">11-50 employees</option>
+                                <option value="51-200">51-200 employees</option>
+                                <option value="201-500">201-500 employees</option>
+                                <option value="501-1000">501-1000 employees</option>
+                                <option value="1001+">1001+ employees</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="terms" name="terms" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" required>
+                            <label for="terms" class="ml-2 block text-sm text-gray-700">
+                                I agree to the <a href="#" class="text-indigo-600 hover:text-indigo-800">Terms of Service</a> and <a href="#" class="text-indigo-600 hover:text-indigo-800">Privacy Policy</a>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="w-full gradient-bg text-white py-2 px-4 rounded-md hover:opacity-90 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            Create Account
+                        </button>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-gray-300"></div>
+                            </div>
+                            <div class="relative flex justify-center text-sm">
+                                <span class="px-2 bg-white text-gray-500">Or sign up with</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 grid grid-cols-3 gap-3">
+                            <a href="#" class="flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                <i class="fab fa-google"></i>
+                            </a>
+                            <a href="#" class="flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" class="flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Login Link -->
+            <p class="text-center mt-6 text-gray-600 animate-fade-in delay-200">
+                Already have an account? <a href="login.html" class="text-indigo-600 hover:text-indigo-800 font-medium">Sign in</a>
+            </p>
+            
+            <!-- Back to Home -->
+            <p class="text-center mt-4 text-gray-600 animate-fade-in delay-200">
+                <a href="index.html" class="text-gray-600 hover:text-indigo-600">
+                    <i class="fas fa-arrow-left mr-1"></i> Back to Home
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Toggle account type fields
+        const candidateRadio = document.getElementById('candidate');
+        const recruiterRadio = document.getElementById('recruiter');
+        const candidateFields = document.getElementById('candidateFields');
+        const recruiterFields = document.getElementById('recruiterFields');
+        
+        candidateRadio.addEventListener('change', function() {
+            if (this.checked) {
+                candidateFields.classList.remove('hidden');
+                recruiterFields.classList.add('hidden');
+            }
+        });
+        
+        recruiterRadio.addEventListener('change', function() {
+            if (this.checked) {
+                recruiterFields.classList.remove('hidden');
+                candidateFields.classList.add('hidden');
+            }
+        });
+        
+        // Toggle password visibility
+        document.querySelectorAll('.togglePassword').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.closest('div').querySelector('input');
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+        
+        // Handle form submission
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const accountType = document.querySelector('input[name="accountType"]:checked').value;
+            
+            // Basic validation
+            if (!firstName || !lastName || !email || !password) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+            
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long.');
+                return;
+            }
+            
+            // Redirect based on account type
+            if (accountType === 'candidate') {
+                window.location.href = 'candidate-portal-new.html';
+            } else {
+                window.location.href = 'recruiter-portal.html';
+            }
+        });
+        
+        // Add animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.animate-fade-in');
+            
+            elements.forEach(element => {
+                element.style.opacity = '1';
+            });
+        });
+    </script>
+</body>
+</html>

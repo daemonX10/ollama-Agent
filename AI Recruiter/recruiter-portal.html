@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentAI - Recruiter Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%);
+        }
+        .sidebar-active {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: #4F46E5;
+            border-left: 3px solid #4F46E5;
+        }
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(90deg, #4F46E5, #7C3AED);
+        }
+        .candidate-card:hover {
+            border-color: #4F46E5;
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        .job-card:hover {
+            border-color: #4F46E5;
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+        }
+        .status-active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10B981;
+        }
+        .status-draft {
+            background-color: rgba(107, 114, 128, 0.1);
+            color: #6B7280;
+        }
+        .status-paused {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: #F59E0B;
+        }
+        .status-closed {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+        }
+        .skill-tag {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: #4F46E5;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        
+        /* Enhanced styles for recruiter portal */
+        .typing-animation .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #4B5563;
+            border-radius: 50%;
+            animation: typing 1.5s infinite ease-in-out;
+        }
+        .typing-animation .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .typing-animation .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-animation .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-5px);
+            }
+        }
+        .toast-notification {
+            transition: all 0.3s ease;
+        }
+        .notification-item.unread {
+            border-left: 3px solid #4F46E5;
+        }        #pageLoader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        .chat-message {
+            max-width: 75%;
+            word-break: break-word;
+        }
+        .candidate-rating:hover .fas.fa-star {
+            color: #F59E0B;
+        }
+        .chart-container {
+            height: 280px;
+            position: relative;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-800 bg-gray-50">
+    <!-- Page Loader -->
+    <div id="pageLoader">
+        <div class="flex flex-col items-center">
+            <div class="loader mb-4">
+                <div class="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            </div>
+            <div class="text-lg font-semibold text-gradient">Loading your recruiter dashboard...</div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-20 right-4 z-50 w-80">
+        <!-- Toast notifications will be added here dynamically -->
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm fixed w-full z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center">
+                <span class="text-2xl font-bold text-gradient">TalentAI</span>
+            </a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#" class="text-indigo-600 hover:text-indigo-700 transition">Dashboard</a>
+                <a href="#" class="text-gray-600 hover:text-indigo-600 transition">Jobs</a>
+                <a href="#" class="text-gray-600 hover:text-indigo-600 transition">Candidates</a>
+                <a href="#" class="text-gray-600 hover:text-indigo-600 transition">Analytics</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- Notifications -->
+                <div class="relative">
+                    <button id="notification-btn" class="text-gray-600 hover:text-indigo-600 transition relative">
+                        <i class="fas fa-bell"></i>
+                        <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">4</span>
+                    </button>
+                    <!-- Notification dropdown -->
+                    <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-lg z-20">
+                        <div class="p-3 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="font-semibold">Notifications</h3>
+                            <button id="clear-notifications-btn" class="text-xs text-indigo-600 hover:text-indigo-800">Clear All</button>
+                        </div>
+                        <div id="notifications-list" class="max-h-80 overflow-y-auto">
+                            <div class="p-3 border-b border-gray-100 hover:bg-gray-50 notification-item unread bg-indigo-50">
+                                <div class="flex items-start">
+                                    <div class="bg-indigo-100 p-2 rounded-full text-indigo-600 mr-3">
+                                        <i class="fas fa-user-check"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium">New application: Senior Frontend Developer</p>
+                                        <p class="text-gray-500 text-sm">John Smith applied for the position</p>
+                                        <p class="text-gray-400 text-xs mt-1">10 min ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 border-b border-gray-100 hover:bg-gray-50 notification-item unread bg-indigo-50">
+                                <div class="flex items-start">
+                                    <div class="bg-green-100 p-2 rounded-full text-green-600 mr-3">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium">Interview reminder</p>
+                                        <p class="text-gray-500 text-sm">Interview with Maria Garcia at 2:00 PM</p>
+                                        <p class="text-gray-400 text-xs mt-1">1 hour ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 border-b border-gray-100 hover:bg-gray-50 notification-item unread bg-indigo-50">
+                                <div class="flex items-start">
+                                    <div class="bg-purple-100 p-2 rounded-full text-purple-600 mr-3">
+                                        <i class="fas fa-comment-alt"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium">New message from candidate</p>
+                                        <p class="text-gray-500 text-sm">Emma Wilson sent you a message</p>
+                                        <p class="text-gray-400 text-xs mt-1">Yesterday</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 border-b border-gray-100 hover:bg-gray-50 notification-item">
+                                <div class="flex items-start">
+                                    <div class="bg-yellow-100 p-2 rounded-full text-yellow-600 mr-3">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium">AI Match suggestion</p>
+                                        <p class="text-gray-500 text-sm">3 new candidates match for UX Designer</p>
+                                        <p class="text-gray-400 text-xs mt-1">2 days ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-2 text-center border-t border-gray-200">
+                            <a href="#" class="text-sm text-indigo-600 hover:text-indigo-800">View All Notifications</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Messages -->
+                <div class="relative">
+                    <button id="messages-btn" class="text-gray-600 hover:text-indigo-600 transition relative">
+                        <i class="fas fa-envelope"></i>
+                        <span id="messages-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
+                    </button>
+                    <!-- Message dropdown -->
+                    <div id="messages-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-lg z-20">
+                        <div class="p-3 border-b border-gray-200">
+                            <h3 class="font-semibold">Messages</h3>
+                        </div>
+                        <div id="messages-list" class="max-h-80 overflow-y-auto">
+                            <a href="#" class="block p-3 border-b border-gray-100 hover:bg-gray-50 bg-indigo-50">
+                                <div class="flex items-start">
+                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="David Kim" class="w-10 h-10 rounded-full mr-3 object-cover">
+                                    <div class="flex-1">
+                                        <p class="font-medium">David Kim</p>
+                                        <p class="text-gray-500 text-sm truncate">Thank you for the interview opportunity...</p>
+                                        <p class="text-gray-400 text-xs mt-1">20 min ago</p>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="#" class="block p-3 border-b border-gray-100 hover:bg-gray-50 bg-indigo-50">
+                                <div class="flex items-start">
+                                    <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Emma Wilson" class="w-10 h-10 rounded-full mr-3 object-cover">
+                                    <div class="flex-1">
+                                        <p class="font-medium">Emma Wilson</p>
+                                        <p class="text-gray-500 text-sm truncate">I have a question about the UI/UX position...</p>
+                                        <p class="text-gray-400 text-xs mt-1">Yesterday</p>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="#" class="block p-3 border-b border-gray-100 hover:bg-gray-50">
+                                <div class="flex items-start">
+                                    <img src="https://randomuser.me/api/portraits/men/68.jpg" alt="Michael Chen" class="w-10 h-10 rounded-full mr-3 object-cover">
+                                    <div class="flex-1">
+                                        <p class="font-medium">Michael Chen</p>
+                                        <p class="text-gray-500 text-sm truncate">Looking forward to our next steps...</p>
+                                        <p class="text-gray-400 text-xs mt-1">2 days ago</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="p-2 text-center border-t border-gray-200">
+                            <a href="#" class="text-sm text-indigo-600 hover:text-indigo-800">View All Messages</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <button id="user-menu-btn" class="flex items-center space-x-2">
+                        <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="User Avatar" class="w-8 h-8 rounded-full object-cover">
+                        <span class="hidden md:block">Sarah Miller</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    <!-- User dropdown -->
+                    <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg z-20">
+                        <div class="py-1">
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                                <i class="fas fa-user mr-2"></i>Profile
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                                <i class="fas fa-question-circle mr-2"></i>Help
+                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <a href="index.html" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Sign out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden text-gray-700 focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu (hidden by default) -->
+        <div id="mobile-menu" class="hidden bg-white shadow-lg md:hidden">
+            <div class="px-4 py-2 space-y-2">
+                <a href="#" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Dashboard</a>
+                <a href="#" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Jobs</a>
+                <a href="#" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Candidates</a>
+                <a href="#" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Analytics</a>
+                <a href="index.html" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Back to Home</a>
+            </div>
+        </div>
+    </nav>    <div class="pt-16 flex min-h-screen">
+        <!-- Sidebar -->
+        <div class="hidden md:block w-64 border-r border-gray-200 px-4 py-6 bg-white">
+            <div class="flex flex-col h-full">
+                <div class="flex items-center justify-center mb-8">
+                    <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="User Profile" class="w-20 h-20 rounded-full object-cover border-4 border-indigo-100">
+                </div>
+                <h3 class="text-lg font-semibold text-center">Sarah Miller</h3>
+                <p class="text-gray-500 text-center mb-6">Talent Acquisition Manager</p>
+                
+                <div class="space-y-1 flex-grow">
+                    <a href="#" class="flex items-center px-4 py-3 sidebar-active rounded-lg">
+                        <i class="fas fa-home w-5"></i>
+                        <span class="ml-3">Dashboard</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-briefcase w-5"></i>
+                        <span class="ml-3">Jobs</span>
+                        <span class="ml-auto bg-indigo-100 text-indigo-600 text-xs px-2 py-1 rounded-full">14</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-users w-5"></i>
+                        <span class="ml-3">Candidates</span>
+                        <span class="ml-auto bg-indigo-100 text-indigo-600 text-xs px-2 py-1 rounded-full">128</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-video w-5"></i>
+                        <span class="ml-3">Interviews</span>
+                        <span class="ml-auto bg-yellow-100 text-yellow-600 text-xs px-2 py-1 rounded-full">12</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-chart-line w-5"></i>
+                        <span class="ml-3">Analytics</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg relative">
+                        <i class="fas fa-comment-alt w-5"></i>
+                        <span class="ml-3">Messages</span>
+                        <span class="ml-auto bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">2</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-cog w-5"></i>
+                        <span class="ml-3">Settings</span>
+                    </a>
+                </div>
+                
+                <div class="mt-auto">
+                    <a href="index.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-sign-out-alt w-5"></i>
+                        <span class="ml-3">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Dashboard Content -->
+            <div class="container mx-auto px-4 py-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold">Recruiter Dashboard</h1>
+                    <div class="flex space-x-2">
+                        <span class="text-gray-500">Today:</span>
+                        <span class="font-semibold" id="current-date">May 15, 2025</span>
+                    </div>
+                </div>
+                  <!-- Stats Overview -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
+                                <i class="fas fa-briefcase text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-500">Active Jobs</p>
+                                <div class="flex items-center">
+                                    <p class="text-2xl font-semibold">14</p>
+                                    <span class="text-green-500 text-sm ml-2 flex items-center">
+                                        <i class="fas fa-arrow-up mr-1"></i>2
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm flex items-center">
+                                View all jobs <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                            </a>
+                        </div>
+                    </div><div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-500">Total Candidates</p>
+                                <div class="flex items-center">
+                                    <p class="text-2xl font-semibold">128</p>
+                                    <span class="text-green-500 text-sm ml-2 flex items-center">
+                                        <i class="fas fa-arrow-up mr-1"></i>15
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm flex items-center">
+                                View all candidates <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-user-check text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-500">Interviews This Week</p>
+                                <div class="flex items-center">
+                                    <p class="text-2xl font-semibold">12</p>
+                                    <span class="text-red-500 text-sm ml-2 flex items-center">
+                                        <i class="fas fa-arrow-down mr-1"></i>3
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm flex items-center">
+                                View schedule <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <i class="fas fa-check-circle text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-500">Positions Filled</p>
+                                <div class="flex items-center">
+                                    <p class="text-2xl font-semibold">6</p>
+                                    <span class="text-green-500 text-sm ml-2 flex items-center">
+                                        <i class="fas fa-arrow-up mr-1"></i>1
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm flex items-center">
+                                View details <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                            </a>
+                        </div>
+                    </div>                </div>
+                  <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <h2 class="text-lg font-semibold mb-4">Quick Actions</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button id="new-job-btn" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md transition-all">
+                            <i class="fas fa-plus-circle text-indigo-600 text-2xl mb-2"></i>
+                            <span class="text-gray-700">New Job</span>
+                        </button>
+                        <button id="add-candidate-btn" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md transition-all">
+                            <i class="fas fa-user-plus text-indigo-600 text-2xl mb-2"></i>
+                            <span class="text-gray-700">Add Candidate</span>
+                        </button>
+                        <button id="schedule-interview-btn" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md transition-all">
+                            <i class="fas fa-calendar-plus text-indigo-600 text-2xl mb-2"></i>
+                            <span class="text-gray-700">Schedule Interview</span>
+                        </button>
+                        <button id="ai-assistant-btn" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md transition-all">
+                            <i class="fas fa-robot text-indigo-600 text-2xl mb-2"></i>
+                            <span class="text-gray-700">AI Assistant</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left Column -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Analytics Dashboard -->
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold">Recruitment Analytics</h2>
+                                <div class="flex space-x-2">
+                                    <button class="analytics-period-btn text-xs px-3 py-1 rounded-full bg-indigo-100 text-indigo-600">Week</button>
+                                    <button class="analytics-period-btn text-xs px-3 py-1 rounded-full">Month</button>
+                                    <button class="analytics-period-btn text-xs px-3 py-1 rounded-full">Quarter</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-600 mb-2">Applications Over Time</h3>
+                                    <div id="application-chart" class="chart-container">
+                                        <!-- Chart will be rendered by JS -->
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-600 mb-2">Candidate Sources</h3>
+                                    <div id="source-chart" class="chart-container">
+                                        <!-- Chart will be rendered by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                                <div class="border border-gray-200 rounded-lg p-4 text-center">
+                                    <p class="text-sm text-gray-500">Avg Time to Hire</p>
+                                    <p class="text-2xl font-semibold text-indigo-600">28 days</p>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4 text-center">
+                                    <p class="text-sm text-gray-500">Application to Interview</p>
+                                    <p class="text-2xl font-semibold text-green-600">22%</p>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4 text-center">
+                                    <p class="text-sm text-gray-500">Offer Acceptance</p>
+                                    <p class="text-2xl font-semibold text-purple-600">85%</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Jobs -->
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold">Recent Jobs</h2>
+                                <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">View All Jobs</a>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full">
+                                    <thead>
+                                        <tr class="border-b">
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Job Title</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Applications</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Created</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="jobs-table-body">
+                                        <tr class="border-b hover:bg-gray-50">
+                                            <td class="py-3 px-4">
+                                                <div class="font-medium">Senior Software Engineer</div>
+                                                <div class="text-sm text-gray-500">Engineering</div>
+                                            </td>
+                                            <td class="py-3 px-4 text-gray-600">24</td>
+                                            <td class="py-3 px-4">
+                                                <span class="status-badge status-active">Active</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-gray-600">May 8, 2025</td>
+                                            <td class="py-3 px-4">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-gray-500 hover:text-indigo-600">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="text-gray-500 hover:text-indigo-600">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <div class="relative">
+                                                        <label class="inline-flex relative items-center cursor-pointer">
+                                                            <input type="checkbox" value="" class="sr-only peer job-status-toggle" data-job-id="1" checked>
+                                                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="border-b hover:bg-gray-50">
+                                            <td class="py-3 px-4">
+                                                <div class="font-medium">Product Designer</div>
+                                                <div class="text-sm text-gray-500">Design</div>
+                                            </td>
+                                            <td class="py-3 px-4 text-gray-600">18</td>
+                                            <td class="py-3 px-4">
+                                                <span class="status-badge status-active">Active</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-gray-600">May 5, 2025</td>
+                                            <td class="py-3 px-4">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-gray-500 hover:text-indigo-600">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="text-gray-500 hover:text-indigo-600">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <div class="relative">
+                                                        <label class="inline-flex relative items-center cursor-pointer">
+                                                            <input type="checkbox" value="" class="sr-only peer job-status-toggle" data-job-id="2" checked>
+                                                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="border-b hover:bg-gray-50">
+                                            <td class="py-3 px-4">
+                                                <div class="font-medium">Marketing Specialist</div>
+                                                <div class="text-sm text-gray-500">Marketing</div>
+                                            </td>
+                                            <td class="py-3 px-4 text-gray-600">12</td>
+                                            <td class="py-3 px-4">
+                                                <span class="status-badge status-paused">Paused</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-gray-600">May 1, 2025</td>
+                                            <td class="py-3 px-4">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-gray-500 hover:text-indigo-600">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>                                                    <button class="text-gray-500 hover:text-indigo-600">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <div class="relative">
+                                                        <label class="inline-flex relative items-center cursor-pointer">
+                                                            <input type="checkbox" value="" class="sr-only peer job-status-toggle" data-job-id="3">
+                                                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- AI-Matched Candidates Section -->
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold">AI-Matched Candidates</h2>
+                                <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">View All</a>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <!-- Candidate Card 1 -->
+                                <div class="border border-gray-200 rounded-lg p-4 candidate-card transition-all duration-200">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex items-start space-x-3">
+                                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Candidate" class="w-12 h-12 rounded-full object-cover">
+                                            <div>
+                                                <h3 class="font-semibold">Michael Chen</h3>
+                                                <div class="text-gray-600 text-sm">Senior Software Engineer</div>
+                                                <div class="text-gray-500 text-sm">5 years experience</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">96% Match</span>
+                                            <span class="text-gray-500 text-xs mt-2">For: Senior Software Engineer</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 flex flex-wrap gap-2">
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">JavaScript</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">React</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">Node.js</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">AWS</span>
+                                    </div>
+                                    <div class="mt-4 flex justify-end space-x-2">
+                                        <button class="text-gray-500 hover:text-indigo-600">
+                                            <i class="fas fa-file-alt"></i>
+                                        </button>
+                                        <button class="text-gray-500 hover:text-indigo-600">
+                                            <i class="fas fa-envelope"></i>
+                                        </button>
+                                        <a href="#" class="bg-indigo-600 text-white px-4 py-1 rounded-md text-sm hover:bg-indigo-700">View Profile</a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Candidate Card 2 -->
+                                <div class="border border-gray-200 rounded-lg p-4 candidate-card transition-all duration-200">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex items-start space-x-3">
+                                            <img src="https://randomuser.me/api/portraits/women/42.jpg" alt="Candidate" class="w-12 h-12 rounded-full object-cover">
+                                            <div>
+                                                <h3 class="font-semibold">Emily Johnson</h3>
+                                                <div class="text-gray-600 text-sm">Product Designer</div>
+                                                <div class="text-gray-500 text-sm">4 years experience</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">94% Match</span>
+                                            <span class="text-gray-500 text-xs mt-2">For: Product Designer</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 flex flex-wrap gap-2">
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">UI/UX</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">Figma</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">User Research</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">Prototyping</span>
+                                    </div>
+                                    <div class="mt-4 flex justify-end space-x-2">
+                                        <button class="text-gray-500 hover:text-indigo-600">
+                                            <i class="fas fa-file-alt"></i>
+                                        </button>                                        <button class="text-gray-500 hover:text-indigo-600">
+                                            <i class="fas fa-envelope"></i>
+                                        </button>
+                                        <a href="#" class="bg-indigo-600 text-white px-4 py-1 rounded-md text-sm hover:bg-indigo-700">View Profile</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Upcoming Interviews -->
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold">Upcoming Interviews</h2>
+                                <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">View All</a>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="font-medium">John Smith</div>
+                                        <span class="text-xs text-white bg-indigo-600 px-2 py-1 rounded-full">Video</span>
+                                    </div>
+                                    <div class="text-gray-600 text-sm">Senior Software Engineer</div>
+                                    <div class="mt-2 flex items-center text-sm text-gray-600">
+                                        <i class="far fa-calendar-alt mr-2"></i>
+                                        <span>May 12, 2025</span>
+                                        <span class="mx-2">•</span>
+                                        <i class="far fa-clock mr-2"></i>
+                                        <span>2:00 PM - 3:00 PM</span>
+                                    </div>
+                                    <div class="mt-3 flex justify-end">
+                                        <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm mr-4">View Details</a>
+                                        <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">Join Call</a>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="font-medium">Lisa Wong</div>
+                                        <span class="text-xs text-white bg-indigo-600 px-2 py-1 rounded-full">In Person</span>
+                                    </div>
+                                    <div class="text-gray-600 text-sm">Marketing Manager</div>
+                                    <div class="mt-2 flex items-center text-sm text-gray-600">
+                                        <i class="far fa-calendar-alt mr-2"></i>
+                                        <span>May 13, 2025</span>
+                                        <span class="mx-2">•</span>
+                                        <i class="far fa-clock mr-2"></i>
+                                        <span>11:00 AM - 12:00 PM</span>
+                                    </div>
+                                    <div class="mt-3 flex justify-end">
+                                        <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Recruiter Assistant -->
+                        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg shadow-sm p-6 text-white">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-robot mr-2"></i>
+                                    <h2 class="text-lg font-semibold">AI Recruiter Assistant</h2>
+                                </div>
+                            </div>
+                            <p class="mb-4">Need help optimizing your recruitment process?</p>
+                            <div class="space-y-3">
+                                <a href="#" class="flex items-center p-2 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all">
+                                    <i class="fas fa-file-alt mr-2"></i>
+                                    <span>Generate Job Description</span>
+                                </a>
+                                <a href="#" class="flex items-center p-2 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all">
+                                    <i class="fas fa-search mr-2"></i>
+                                    <span>Find Candidates</span>
+                                </a>
+                                <a href="#" class="flex items-center p-2 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all">
+                                    <i class="fas fa-comment-dots mr-2"></i>
+                                    <span>Interview Question Suggestions</span>
+                                </a>
+                            </div>
+                            <div class="mt-4">
+                                <button class="w-full bg-white text-indigo-600 py-2 rounded-md hover:bg-indigo-50 transition-all">
+                                    Ask AI Assistant
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Hiring Pipeline -->
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <h2 class="text-lg font-semibold mb-4">Hiring Pipeline</h2>
+                            
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <div class="text-gray-700">All Applications</div>
+                                    <div class="text-indigo-600 font-semibold">128</div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-indigo-600 h-2 rounded-full" style="width: 100%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <div class="text-gray-700">Resume Screened</div>
+                                    <div class="text-indigo-600 font-semibold">86</div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-indigo-600 h-2 rounded-full" style="width: 67%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <div class="text-gray-700">Technical Assessment</div>
+                                    <div class="text-indigo-600 font-semibold">42</div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-indigo-600 h-2 rounded-full" style="width: 33%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <div class="text-gray-700">Interview Stage</div>
+                                    <div class="text-indigo-600 font-semibold">18</div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-indigo-600 h-2 rounded-full" style="width: 14%"></div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <div class="text-gray-700">Offers Extended</div>
+                                    <div class="text-indigo-600 font-semibold">8</div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-indigo-600 h-2 rounded-full" style="width: 6%"></div>
+                                </div>                                <div class="flex justify-between items-center">
+                                    <div class="text-gray-700">Hired</div>
+                                    <div class="text-indigo-600 font-semibold">6</div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-indigo-600 h-2 rounded-full" style="width: 5%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold text-gradient">TalentAI</h3>
+                    <p class="text-gray-400">© 2025 TalentAI. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">Help Center</a>
+                    <a href="index.html" class="text-gray-400 hover:text-white transition">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Job Modal -->
+    <div id="job-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold">Create New Job Posting</h2>
+                    <button id="close-job-modal-btn" class="text-gray-500 hover:text-gray-800">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="job-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                            <input type="text" id="job-title" name="job-title" required
+                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                            <input type="text" id="job-department" name="job-department" required
+                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                            <select id="job-location" name="job-location" required
+                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                <option value="">Select Location</option>
+                                <option value="onsite">Onsite</option>
+                                <option value="remote">Remote</option>
+                                <option value="hybrid">Hybrid</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>
+                            <select id="job-type" name="job-type" required
+                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                <option value="">Select Type</option>
+                                <option value="full-time">Full-time</option>
+                                <option value="part-time">Part-time</option>
+                                <option value="contract">Contract</option>
+                                <option value="freelance">Freelance</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Experience Level</label>
+                            <select id="job-experience" name="job-experience" required
+                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                <option value="">Select Experience</option>
+                                <option value="entry">Entry Level (0-2 years)</option>
+                                <option value="mid">Mid Level (3-5 years)</option>
+                                <option value="senior">Senior Level (5+ years)</option>
+                                <option value="executive">Executive Level</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Salary Range</label>
+                            <div class="flex space-x-2">
+                                <input type="number" id="salary-min" name="salary-min" placeholder="Min" required
+                                    class="w-1/2 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                <input type="number" id="salary-max" name="salary-max" placeholder="Max" required
+                                    class="w-1/2 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Job Description</label>
+                        <textarea id="job-description" name="job-description" rows="4" required
+                            class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Requirements</label>
+                        <div id="requirements-container" class="space-y-2">
+                            <div class="requirement-item flex space-x-2">
+                                <input type="text" name="requirements[]" required
+                                    class="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                <button type="button" class="remove-requirement px-2 py-1 text-red-500 hover:text-red-700">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" id="add-requirement-btn" class="mt-2 text-indigo-600 hover:text-indigo-800 text-sm">
+                            <i class="fas fa-plus mr-1"></i>Add Requirement
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Benefits</label>
+                        <div id="benefits-container" class="space-y-2">
+                            <div class="benefit-item flex space-x-2">
+                                <input type="text" name="benefits[]" required
+                                    class="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                <button type="button" class="remove-benefit px-2 py-1 text-red-500 hover:text-red-700">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" id="add-benefit-btn" class="mt-2 text-indigo-600 hover:text-indigo-800 text-sm">
+                            <i class="fas fa-plus mr-1"></i>Add Benefit
+                        </button>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4">
+                        <div class="flex justify-between">
+                            <div>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" id="post-immediately" name="post-immediately" class="text-indigo-600 rounded">
+                                    <span class="ml-2 text-sm text-gray-700">Post Immediately</span>
+                                </label>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button type="button" id="save-as-draft-btn" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                                    Save as Draft
+                                </button>
+                                <button type="submit" id="job-submit-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                                    Create Job Posting
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interview Scheduling Modal -->
+    <div id="schedule-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold">Schedule Interview</h2>
+                    <button id="close-schedule-modal-btn" class="text-gray-500 hover:text-gray-800">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="schedule-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Candidate</label>
+                            <select id="interview-candidate" name="interview-candidate" required
+                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                <option value="">Select Candidate</option>
+                                <option value="1">John Smith - Senior Software Engineer</option>
+                                <option value="2">Emma Wilson - Product Designer</option>
+                                <option value="3">Michael Chen - Full Stack Developer</option>
+                                <option value="4">Maria Garcia - Marketing Specialist</option>
+                                <option value="5">David Kim - Data Scientist</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                            <select id="interview-position" name="interview-position" required
+                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                <option value="">Select Position</option>
+                                <option value="1">Senior Software Engineer</option>
+                                <option value="2">Product Designer</option>
+                                <option value="3">Full Stack Developer</option>
+                                <option value="4">Marketing Specialist</option>
+                                <option value="5">Data Scientist</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Interview Type</label>
+                            <select id="interview-type" name="interview-type" required
+                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                <option value="">Select Type</option>
+                                <option value="screening">Phone Screening</option>
+                                <option value="technical">Technical Interview</option>
+                                <option value="behavioral">Behavioral Interview</option>
+                                <option value="culture-fit">Culture Fit</option>
+                                <option value="final">Final Interview</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Interview Format</label>
+                            <select id="interview-format" name="interview-format" required
+                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                <option value="">Select Format</option>
+                                <option value="phone">Phone Call</option>
+                                <option value="video">Video Call</option>
+                                <option value="in-person">In Person</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                            <input type="date" id="interview-date" name="interview-date" required
+                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                            <div class="flex space-x-2">
+                                <input type="time" id="interview-start-time" name="interview-start-time" required
+                                    class="w-1/2 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                <input type="time" id="interview-end-time" name="interview-end-time" required
+                                    class="w-1/2 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Interviewers</label>
+                        <div id="interviewers-container" class="space-y-2">
+                            <div class="interviewer-item flex space-x-2">
+                                <select name="interviewers[]" required
+                                    class="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                    <option value="">Select Interviewer</option>
+                                    <option value="1">Sarah Miller - Talent Acquisition Manager</option>
+                                    <option value="2">James Wilson - Engineering Manager</option>
+                                    <option value="3">Emily Davis - Senior Designer</option>
+                                    <option value="4">Robert Lee - CTO</option>
+                                    <option value="5">Jennifer Lopez - HR Director</option>
+                                </select>
+                                <button type="button" class="remove-interviewer px-2 py-1 text-red-500 hover:text-red-700">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" id="add-interviewer-btn" class="mt-2 text-indigo-600 hover:text-indigo-800 text-sm">
+                            <i class="fas fa-plus mr-1"></i>Add Interviewer
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Location/Meeting Link</label>
+                        <input type="text" id="interview-location" name="interview-location" required
+                            class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Notes/Preparation Instructions</label>
+                        <textarea id="interview-notes" name="interview-notes" rows="3"
+                            class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600"></textarea>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" id="send-calendar-invite" name="send-calendar-invite" class="text-indigo-600 rounded" checked>
+                                    <span class="ml-2 text-sm text-gray-700">Send Calendar Invite</span>
+                                </label>
+                            </div>
+                            <button type="submit" id="schedule-submit-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                                Schedule Interview
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant Modal -->
+    <div id="ai-assistant-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl max-h-screen overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between bg-indigo-600 p-4 text-white">
+                <div class="flex items-center">
+                    <i class="fas fa-robot text-2xl mr-2"></i>
+                    <h2 class="text-xl font-semibold">AI Recruiter Assistant</h2>
+                </div>
+                <button id="close-ai-modal-btn" class="text-white hover:text-indigo-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="flex flex-1 overflow-hidden">
+                <!-- Left sidebar with quick access features -->
+                <div class="w-64 bg-indigo-50 border-r border-indigo-100 p-4 overflow-y-auto">
+                    <h3 class="font-medium text-indigo-700 mb-3">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="ai-quick-prompt w-full text-left p-2 rounded-lg hover:bg-indigo-100 transition-colors text-gray-700 text-sm" data-prompt="Generate a job description for a Senior Software Engineer position.">
+                            <i class="fas fa-file-alt mr-2 text-indigo-600"></i>
+                            Generate Job Description
+                        </button>
+                        <button class="ai-quick-prompt w-full text-left p-2 rounded-lg hover:bg-indigo-100 transition-colors text-gray-700 text-sm" data-prompt="Suggest interview questions for a Product Designer role.">
+                            <i class="fas fa-question-circle mr-2 text-indigo-600"></i>
+                            Interview Questions
+                        </button>
+                        <button class="ai-quick-prompt w-full text-left p-2 rounded-lg hover:bg-indigo-100 transition-colors text-gray-700 text-sm" data-prompt="Help me find candidates with experience in JavaScript and React.">
+                            <i class="fas fa-search mr-2 text-indigo-600"></i>
+                            Find Candidates
+                        </button>
+                        <button class="ai-quick-prompt w-full text-left p-2 rounded-lg hover:bg-indigo-100 transition-colors text-gray-700 text-sm" data-prompt="Write an email template for rejected candidates.">
+                            <i class="fas fa-envelope mr-2 text-indigo-600"></i>
+                            Email Templates
+                        </button>
+                        <button class="ai-quick-prompt w-full text-left p-2 rounded-lg hover:bg-indigo-100 transition-colors text-gray-700 text-sm" data-prompt="Help me set up a good interview process for software engineers.">
+                            <i class="fas fa-clipboard-list mr-2 text-indigo-600"></i>
+                            Interview Process
+                        </button>
+                        <button class="ai-quick-prompt w-full text-left p-2 rounded-lg hover:bg-indigo-100 transition-colors text-gray-700 text-sm" data-prompt="What are the competitive salary ranges for UX Designers in San Francisco?">
+                            <i class="fas fa-dollar-sign mr-2 text-indigo-600"></i>
+                            Salary Insights
+                        </button>
+                    </div>
+                    
+                    <h3 class="font-medium text-indigo-700 mb-3 mt-6">Recent Conversations</h3>
+                    <div class="space-y-2">
+                        <div class="p-2 rounded-lg hover:bg-indigo-100 cursor-pointer transition-colors">
+                            <div class="font-medium text-sm text-gray-800">Job Description Help</div>
+                            <div class="text-xs text-gray-500 truncate">Yesterday at 3:45 PM</div>
+                        </div>
+                        <div class="p-2 rounded-lg hover:bg-indigo-100 cursor-pointer transition-colors">
+                            <div class="font-medium text-sm text-gray-800">Technical Questions</div>
+                            <div class="text-xs text-gray-500 truncate">May 10, 2025</div>
+                        </div>
+                        <div class="p-2 rounded-lg hover:bg-indigo-100 cursor-pointer transition-colors">
+                            <div class="font-medium text-sm text-gray-800">Candidate Search</div>
+                            <div class="text-xs text-gray-500 truncate">May 5, 2025</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main conversation area -->
+                <div class="flex-1 flex flex-col">
+                    <div id="ai-response-container" class="flex-1 p-4 overflow-y-auto">
+                        <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mr-3">
+                                    <div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-semibold text-lg mb-2">TalentAI Assistant</h3>
+                                    <p class="mb-3">Hello Sarah! I'm your AI recruiting assistant. I can help you with various tasks such as:</p>
+                                    <ul class="list-disc pl-5 mb-3 space-y-1">
+                                        <li>Writing job descriptions</li>
+                                        <li>Generating interview questions</li>
+                                        <li>Creating email templates</li>
+                                        <li>Finding suitable candidates</li>
+                                        <li>Providing salary insights</li>
+                                        <li>Setting up interview processes</li>
+                                    </ul>
+                                    <p>How can I assist you today?</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 p-4">
+                        <form id="ai-prompt-form" class="flex items-end">
+                            <div class="flex-1">
+                                <textarea id="ai-prompt-input" rows="2" placeholder="Ask the AI assistant..." 
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600 resize-none"></textarea>
+                            </div>
+                            <button type="submit" class="ml-2 bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 flex-shrink-0">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/recruiter-portal.js"></script>
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Add animations for page elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.candidate-card, .bg-white');
+            
+            fadeElements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.style.opacity = 1;
+                    element.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        });
+    </script>
+</body>
+</html>

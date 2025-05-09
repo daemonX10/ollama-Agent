@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentAI - Candidate Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <style>
+        /* Additional styles specific to candidate portal */
+        .typing-animation .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #4B5563;
+            border-radius: 50%;
+            animation: typing 1.5s infinite ease-in-out;
+        }
+        .typing-animation .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .typing-animation .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-animation .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-5px);
+            }
+        }
+        .toast-notification {
+            transition: all 0.3s ease;
+        }
+        .notification-item.unread {
+            border-left: 3px solid #4F46E5;
+        }
+        #pageLoader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-800 bg-gray-50">
+    <!-- Page Loader -->
+    <div id="pageLoader">
+        <div class="flex flex-col items-center">
+            <div class="loader mb-4">
+                <div class="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            </div>
+            <div class="text-lg font-semibold text-gradient">Loading your candidate dashboard...</div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm fixed w-full z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center">
+                <span class="text-2xl font-bold text-gradient">TalentAI</span>
+            </a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#" class="text-indigo-600 hover:text-indigo-700 transition">Dashboard</a>
+                <a href="#" class="text-gray-600 hover:text-indigo-600 transition">Find Jobs</a>
+                <a href="#" class="text-gray-600 hover:text-indigo-600 transition">My Applications</a>
+                <a href="#" class="text-gray-600 hover:text-indigo-600 transition">Resources</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- Notifications -->
+                <div class="relative">
+                    <button id="notification-btn" class="text-gray-600 hover:text-indigo-600 transition relative">
+                        <i class="fas fa-bell"></i>
+                        <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
+                    </button>
+                    <!-- Notification dropdown -->
+                    <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-lg z-20">
+                        <div class="p-3 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="font-semibold">Notifications</h3>
+                            <button id="clear-notifications-btn" class="text-xs text-indigo-600 hover:text-indigo-800">Clear All</button>
+                        </div>
+                        <div id="notifications-list" class="max-h-80 overflow-y-auto">
+                            <div class="p-3 border-b border-gray-100 hover:bg-gray-50 notification-item unread bg-indigo-50">
+                                <div class="flex items-start">
+                                    <div class="bg-indigo-100 p-2 rounded-full text-indigo-600 mr-3">
+                                        <i class="fas fa-briefcase"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium">New job match: Senior Frontend Developer</p>
+                                        <p class="text-gray-500 text-sm">95% match with your profile</p>
+                                        <p class="text-gray-400 text-xs mt-1">5 min ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 border-b border-gray-100 hover:bg-gray-50 notification-item unread bg-indigo-50">
+                                <div class="flex items-start">
+                                    <div class="bg-green-100 p-2 rounded-full text-green-600 mr-3">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium">Application status updated</p>
+                                        <p class="text-gray-500 text-sm">Your application is now being reviewed</p>
+                                        <p class="text-gray-400 text-xs mt-1">2 hours ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 border-b border-gray-100 hover:bg-gray-50 notification-item unread bg-indigo-50">
+                                <div class="flex items-start">
+                                    <div class="bg-blue-100 p-2 rounded-full text-blue-600 mr-3">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium">Interview scheduled</p>
+                                        <p class="text-gray-500 text-sm">May 12, 2025 at 2:00 PM</p>
+                                        <p class="text-gray-400 text-xs mt-1">1 day ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 border-t border-gray-200 text-center">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">View All Notifications</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Messages -->
+                <button id="chat-toggle-btn" class="text-gray-600 hover:text-indigo-600 transition">
+                    <i class="fas fa-envelope"></i>
+                </button>
+                
+                <!-- User dropdown -->
+                <div class="relative">
+                    <button class="flex items-center space-x-2">
+                        <img src="https://randomuser.me/api/portraits/men/43.jpg" alt="User Avatar" class="w-8 h-8 rounded-full object-cover">
+                        <span class="hidden md:block">Alex Johnson</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden text-gray-700 focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu (hidden by default) -->
+        <div id="mobile-menu" class="hidden bg-white shadow-lg md:hidden">
+            <div class="px-4 py-2 space-y-2">
+                <a href="#" class="block py-2 text-indigo-600 hover:text-indigo-700 transition">Dashboard</a>
+                <a href="#" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Find Jobs</a>
+                <a href="#" class="block py-2 text-gray-600 hover:text-indigo-600 transition">My Applications</a>
+                <a href="#" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Resources</a>
+                <a href="index.html" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Back to Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-16 flex min-h-screen">
+        <!-- Sidebar -->
+        <div class="hidden md:block w-64 border-r border-gray-200 px-4 py-6 bg-white">
+            <div class="flex flex-col h-full">
+                <div class="flex items-center justify-center mb-8">
+                    <img src="https://randomuser.me/api/portraits/men/43.jpg" alt="User Profile" class="w-20 h-20 rounded-full object-cover border-4 border-indigo-100">
+                </div>
+                <h3 class="text-lg font-semibold text-center">Alex Johnson</h3>
+                <p class="text-gray-500 text-center mb-6">Software Developer</p>
+                
+                <div class="space-y-1 flex-grow">
+                    <a href="#" class="flex items-center px-4 py-3 sidebar-active rounded-lg">
+                        <i class="fas fa-home w-5"></i>
+                        <span class="ml-3">Dashboard</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-user w-5"></i>
+                        <span class="ml-3">My Profile</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-search w-5"></i>
+                        <span class="ml-3">Find Jobs</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-file-alt w-5"></i>
+                        <span class="ml-3">My Applications</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-bookmark w-5"></i>
+                        <span class="ml-3">Saved Jobs</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-video w-5"></i>
+                        <span class="ml-3">Video Interviews</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-comment-alt w-5"></i>
+                        <span class="ml-3">Messages</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-book w-5"></i>
+                        <span class="ml-3">Resources</span>
+                    </a>
+                </div>
+                
+                <div class="mt-auto">
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-cog w-5"></i>
+                        <span class="ml-3">Settings</span>
+                    </a>
+                    <a href="index.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-indigo-600 rounded-lg">
+                        <i class="fas fa-sign-out-alt w-5"></i>
+                        <span class="ml-3">Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Dashboard Content -->
+            <div class="container mx-auto px-4 py-8">
+                <h1 class="text-2xl font-bold mb-6">Candidate Dashboard</h1>
+                
+                <!-- Profile Completeness -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold">Profile Completeness</h2>
+                        <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">Complete Profile</a>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                        <div id="profile-progress" class="bg-indigo-600 h-2.5 rounded-full" style="width: 70%"></div>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span id="profile-progress-text">70% Complete</span>
+                        <span id="items-remaining-text">3 items remaining</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span>Basic Info</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i id="resume-check" class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span>Resume</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i id="skills-check" class="fas fa-times-circle text-red-500 mr-2"></i>
+                            <span>Skills</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i id="video-check" class="fas fa-times-circle text-red-500 mr-2"></i>
+                            <span>Video Introduction</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Job Search -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <h2 class="text-lg font-semibold mb-4">Find Your Next Opportunity</h2>
+                    <form id="job-search-form" class="mb-4">
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-1">
+                                <input 
+                                    type="text" 
+                                    id="job-search-input" 
+                                    placeholder="Job title, skills, or company" 
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600"
+                                >
+                            </div>
+                            <button type="submit" class="bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition">
+                                <i class="fas fa-search mr-2"></i>Search Jobs
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Skills</label>
+                                <select id="filter-skills" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                    <option value="">All Skills</option>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="react">React</option>
+                                    <option value="node">Node.js</option>
+                                    <option value="python">Python</option>
+                                    <option value="ui">UI/UX Design</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                <select id="filter-location" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                    <option value="">All Locations</option>
+                                    <option value="remote">Remote</option>
+                                    <option value="sf">San Francisco, CA</option>
+                                    <option value="nyc">New York, NY</option>
+                                    <option value="seattle">Seattle, WA</option>
+                                    <option value="boston">Boston, MA</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Salary Range</label>
+                                <select id="filter-salary" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                    <option value="">Any Salary</option>
+                                    <option value="0-80">$0 - $80K</option>
+                                    <option value="80-100">$80K - $100K</option>
+                                    <option value="100-130">$100K - $130K</option>
+                                    <option value="130-160">$130K - $160K</option>
+                                    <option value="160+">$160K+</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Job Type</label>
+                                <select id="filter-job-type" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                    <option value="">All Types</option>
+                                    <option value="full-time">Full-time</option>
+                                    <option value="part-time">Part-time</option>
+                                    <option value="contract">Contract</option>
+                                    <option value="freelance">Freelance</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div id="job-listings" class="space-y-4">
+                        <div class="text-center py-4 text-gray-500">
+                            Use the search above to find your next opportunity!
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left Column -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- AI Job Recommendations -->
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold">AI-Recommended Jobs</h2>
+                                <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">View All</a>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <!-- Job Card 1 -->
+                                <div class="border border-gray-200 rounded-lg p-4 job-card transition-all duration-200">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex items-start space-x-3">
+                                            <img src="https://logo.clearbit.com/microsoft.com" alt="Company Logo" class="w-12 h-12 rounded object-cover">
+                                            <div>
+                                                <h3 class="font-semibold">Senior Frontend Developer</h3>
+                                                <div class="text-gray-600 text-sm">TechCorp Inc.</div>
+                                                <div class="text-gray-500 text-sm">San Francisco, CA (Remote)</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">95% Match</span>
+                                            <span class="text-gray-500 text-xs mt-2">Posted 2 days ago</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 flex flex-wrap gap-2">
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">React</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">TypeScript</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">UI/UX</span>
+                                    </div>
+                                    <div class="mt-4 flex justify-between items-center">
+                                        <div class="text-gray-700">
+                                            <i class="fas fa-dollar-sign"></i>
+                                            <span>120K - 150K</span>
+                                        </div>
+                                        <div class="space-x-2">
+                                            <button class="text-gray-500 hover:text-indigo-600 save-job-btn">
+                                                <i class="far fa-bookmark"></i>
+                                            </button>
+                                            <a href="#" class="bg-indigo-600 text-white px-4 py-1 rounded-md text-sm hover:bg-indigo-700">Apply Now</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Job Card 2 -->
+                                <div class="border border-gray-200 rounded-lg p-4 job-card transition-all duration-200">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex items-start space-x-3">
+                                            <img src="https://logo.clearbit.com/amazon.com" alt="Company Logo" class="w-12 h-12 rounded object-cover">
+                                            <div>
+                                                <h3 class="font-semibold">Full Stack Developer</h3>
+                                                <div class="text-gray-600 text-sm">Innovate Solutions</div>
+                                                <div class="text-gray-500 text-sm">Boston, MA (Hybrid)</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">92% Match</span>
+                                            <span class="text-gray-500 text-xs mt-2">Posted 1 week ago</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 flex flex-wrap gap-2">
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">Node.js</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">React</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">MongoDB</span>
+                                    </div>
+                                    <div class="mt-4 flex justify-between items-center">
+                                        <div class="text-gray-700">
+                                            <i class="fas fa-dollar-sign"></i>
+                                            <span>100K - 130K</span>
+                                        </div>
+                                        <div class="space-x-2">
+                                            <button class="text-gray-500 hover:text-indigo-600 save-job-btn">
+                                                <i class="far fa-bookmark"></i>
+                                            </button>
+                                            <a href="#" class="bg-indigo-600 text-white px-4 py-1 rounded-md text-sm hover:bg-indigo-700">Apply Now</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Job Card 3 -->
+                                <div class="border border-gray-200 rounded-lg p-4 job-card transition-all duration-200">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex items-start space-x-3">
+                                            <img src="https://logo.clearbit.com/adobe.com" alt="Company Logo" class="w-12 h-12 rounded object-cover">
+                                            <div>
+                                                <h3 class="font-semibold">UX/UI Designer</h3>
+                                                <div class="text-gray-600 text-sm">DesignForward</div>
+                                                <div class="text-gray-500 text-sm">Remote (Worldwide)</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">87% Match</span>
+                                            <span class="text-gray-500 text-xs mt-2">Posted 3 days ago</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 flex flex-wrap gap-2">
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">Figma</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">UI Design</span>
+                                        <span class="skill-tag text-xs px-2 py-1 rounded-full">User Research</span>
+                                    </div>
+                                    <div class="mt-4 flex justify-between items-center">
+                                        <div class="text-gray-700">
+                                            <i class="fas fa-dollar-sign"></i>
+                                            <span>90K - 110K</span>
+                                        </div>
+                                        <div class="space-x-2">
+                                            <button class="text-gray-500 hover:text-indigo-600 save-job-btn">
+                                                <i class="far fa-bookmark"></i>
+                                            </button>
+                                            <a href="#" class="bg-indigo-600 text-white px-4 py-1 rounded-md text-sm hover:bg-indigo-700">Apply Now</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Application Status -->
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold">Application Status</h2>
+                                <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">View All</a>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full">
+                                    <thead>
+                                        <tr class="border-b">
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Job</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Company</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Applied</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b hover:bg-gray-50">
+                                            <td class="py-3 px-4">
+                                                <div class="font-medium">Product Designer</div>
+                                            </td>
+                                            <td class="py-3 px-4 text-gray-600">TechGiant</td>
+                                            <td class="py-3 px-4 text-gray-600">May 8, 2025</td>
+                                            <td class="py-3 px-4">
+                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Interview Scheduled</span>
+                                            </td>
+                                            <td class="py-3 px-4">
+                                                <a href="#" class="text-indigo-600 hover:text-indigo-800">View</a>
+                                            </td>
+                                        </tr>
+                                        <tr class="border-b hover:bg-gray-50">
+                                            <td class="py-3 px-4">
+                                                <div class="font-medium">Full Stack Developer</div>
+                                            </td>
+                                            <td class="py-3 px-4 text-gray-600">WebSolutions</td>
+                                            <td class="py-3 px-4 text-gray-600">May 3, 2025</td>
+                                            <td class="py-3 px-4">
+                                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Assessment Completed</span>
+                                            </td>
+                                            <td class="py-3 px-4">
+                                                <a href="#" class="text-indigo-600 hover:text-indigo-800">View</a>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="py-3 px-4">
+                                                <div class="font-medium">Frontend Developer</div>
+                                            </td>
+                                            <td class="py-3 px-4 text-gray-600">CreativeCode</td>
+                                            <td class="py-3 px-4 text-gray-600">April 29, 2025</td>
+                                            <td class="py-3 px-4">
+                                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Under Review</span>
+                                            </td>
+                                            <td class="py-3 px-4">
+                                                <a href="#" class="text-indigo-600 hover:text-indigo-800">View</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Profile Card -->
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold">My Profile</h2>
+                                <button id="edit-profile-btn" class="text-indigo-600 hover:text-indigo-800 text-sm">Edit</button>
+                            </div>
+                            
+                            <!-- Profile Form (hidden by default) -->
+                            <div id="profile-form" class="hidden border border-gray-200 rounded-lg p-4 mb-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                        <input type="text" value="Alex Johnson" class="w-full p-2 border border-gray-300 rounded-lg">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                                        <input type="text" value="Software Developer" class="w-full p-2 border border-gray-300 rounded-lg">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                        <input type="email" value="alex.johnson@example.com" class="w-full p-2 border border-gray-300 rounded-lg">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                        <input type="tel" value="(555) 123-4567" class="w-full p-2 border border-gray-300 rounded-lg">
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">About Me</label>
+                                        <textarea rows="3" class="w-full p-2 border border-gray-300 rounded-lg">Software developer with 5 years of experience in full-stack development. Passionate about creating user-friendly applications and solving complex problems.</textarea>
+                                    </div>
+                                </div>
+                                <div class="flex justify-end space-x-2">
+                                    <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                                    <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Save Changes</button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h3 class="text-sm text-gray-500 mb-1">Resume</h3>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="far fa-file-pdf text-red-500 mr-2"></i>
+                                        <span id="resume-filename">alex-johnson-resume.pdf</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-500 hover:text-indigo-600">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <label class="cursor-pointer text-gray-500 hover:text-indigo-600">
+                                            <i class="fas fa-pen"></i>
+                                            <input type="file" id="resume-upload" class="hidden" accept=".pdf,.doc,.docx">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h3 class="text-sm text-gray-500 mb-1">Skills</h3>
+                                <div class="flex flex-wrap gap-1" id="skills-container">
+                                    <span class="skill-tag text-xs px-2 py-1 rounded-full flex items-center m-1">
+                                        JavaScript
+                                        <button class="ml-1 text-indigo-600 hover:text-indigo-800">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </span>
+                                    <span class="skill-tag text-xs px-2 py-1 rounded-full flex items-center m-1">
+                                        React
+                                        <button class="ml-1 text-indigo-600 hover:text-indigo-800">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </span>
+                                    <span class="skill-tag text-xs px-2 py-1 rounded-full flex items-center m-1">
+                                        Node.js
+                                        <button class="ml-1 text-indigo-600 hover:text-indigo-800">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="flex mt-2">
+                                    <input type="text" id="skills-input" placeholder="Add a skill" class="flex-1 p-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600">
+                                    <button id="add-skill-btn" class="bg-indigo-600 text-white px-3 rounded-r-lg hover:bg-indigo-700">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-sm text-gray-500 mb-1">Video Introduction</h3>
+                                <div id="video-preview">
+                                    <!-- Video will be displayed here after upload -->
+                                </div>
+                                <button id="video-upload-btn" class="w-full flex items-center justify-center px-4 py-2 border border-dashed border-gray-300 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 transition-all">
+                                    <i class="fas fa-plus mr-2 text-gray-400"></i>
+                                    <span class="text-gray-600">Add Video Introduction</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Upcoming Interviews -->
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-semibold">Upcoming Interviews</h2>
+                                <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">View All</a>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="font-medium">TechGiant Interview</div>
+                                        <span class="text-xs text-white bg-indigo-600 px-2 py-1 rounded-full">Video</span>
+                                    </div>
+                                    <div class="text-gray-600 text-sm">Product Designer Position</div>
+                                    <div class="mt-2 flex items-center text-sm text-gray-600">
+                                        <i class="far fa-calendar-alt mr-2"></i>
+                                        <span>May 12, 2025</span>
+                                        <span class="mx-2">•</span>
+                                        <i class="far fa-clock mr-2"></i>
+                                        <span>2:00 PM - 3:00 PM</span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <a href="#" id="interview-prepare-btn" class="block text-center bg-indigo-600 text-white px-4 py-2 rounded-md text-sm hover:bg-indigo-700">Prepare</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 text-center">
+                                <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">Interview Preparation Resources</a>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Assistant -->
+                        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg shadow-sm p-6 text-white">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-robot mr-2"></i>
+                                    <h2 class="text-lg font-semibold">AI Career Assistant</h2>
+                                </div>
+                            </div>
+                            <p class="mb-4">Need help with your job search or upcoming interviews?</p>
+                            <div class="space-y-3">
+                                <a href="#" class="ai-assistant-option flex items-center p-2 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all">
+                                    <i class="fas fa-file-alt mr-2"></i>
+                                    <span>Resume Analysis & Improvement</span>
+                                </a>
+                                <a href="#" class="ai-assistant-option flex items-center p-2 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all">
+                                    <i class="fas fa-comment-dots mr-2"></i>
+                                    <span>Interview Practice</span>
+                                </a>
+                                <a href="#" class="ai-assistant-option flex items-center p-2 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all">
+                                    <i class="fas fa-search mr-2"></i>
+                                    <span>Job Search Strategy</span>
+                                </a>
+                            </div>
+                            <div class="mt-4">
+                                <button class="w-full bg-white text-indigo-600 py-2 rounded-md hover:bg-indigo-50 transition-all">
+                                    Ask AI Assistant
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Panel -->
+    <div id="chat-panel" class="fixed right-4 bottom-4 w-80 bg-white rounded-lg shadow-lg z-20 overflow-hidden hidden">
+        <div class="bg-indigo-600 text-white p-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Recruiter" class="w-8 h-8 rounded-full mr-2">
+                <div>
+                    <div class="font-medium">Sarah Miller</div>
+                    <div class="text-xs text-indigo-200">Recruiter • TechGiant</div>
+                </div>
+            </div>
+            <button id="close-chat-btn" class="text-white hover:text-indigo-200">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="chat-messages" class="p-4 h-80 overflow-y-auto">
+            <div class="flex items-start mb-4">
+                <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Recruiter" class="w-8 h-8 rounded-full mr-3">
+                <div class="bg-gray-100 p-3 rounded-lg max-w-xs">
+                    <p>Hi Alex! I noticed you applied for the Product Designer position at TechGiant. Do you have any questions about the role or the interview process?</p>
+                    <span class="text-xs text-gray-500 block mt-1">10:30 AM</span>
+                </div>
+            </div>
+        </div>
+        <form id="chat-form" class="p-3 border-t border-gray-200">
+            <div class="flex">
+                <input 
+                    type="text" 
+                    id="chat-message-input"
+                    placeholder="Type your message..."
+                    class="flex-1 p-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-600"
+                >
+                <button type="submit" class="bg-indigo-600 text-white px-4 rounded-r-lg hover:bg-indigo-700">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Interview Prep Modal -->
+    <div id="interview-prep-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-screen overflow-y-auto p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold">Interview Preparation - Product Designer at TechGiant</h2>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Company Information -->
+                <div>
+                    <h3 class="text-lg font-medium mb-2">About the Company</h3>
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-start mb-2">
+                            <img src="https://logo.clearbit.com/microsoft.com" alt="TechGiant Logo" class="w-12 h-12 rounded mr-3">
+                            <div>
+                                <h4 class="font-semibold">TechGiant</h4>
+                                <p class="text-gray-600 text-sm">Leading technology company specializing in cloud solutions and enterprise software</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 text-sm">Founded in 2005 • 5,000+ employees • San Francisco, CA</p>
+                        <div class="mt-2">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm mr-4">Company Website</a>
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">Glassdoor Reviews</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Interview Details -->
+                <div>
+                    <h3 class="text-lg font-medium mb-2">Interview Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center text-gray-700 mb-2">
+                                <i class="far fa-calendar-alt mr-2"></i>
+                                <span>May 12, 2025</span>
+                            </div>
+                            <div class="flex items-center text-gray-700 mb-2">
+                                <i class="far fa-clock mr-2"></i>
+                                <span>2:00 PM - 3:00 PM (PT)</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <i class="fas fa-video mr-2"></i>
+                                <span>Video Interview (Zoom)</span>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center text-gray-700 mb-2">
+                                <i class="fas fa-user mr-2"></i>
+                                <span>Interviewer: Jennifer Lopes</span>
+                            </div>
+                            <div class="flex items-center text-gray-700 mb-2">
+                                <i class="fas fa-briefcase mr-2"></i>
+                                <span>Senior Design Manager</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <i class="fas fa-hourglass-half mr-2"></i>
+                                <span>60 minutes duration</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Interview Format -->
+                <div>
+                    <h3 class="text-lg font-medium mb-2">Interview Format</h3>
+                    <div class="p-4 bg-gray-50 rounded-lg space-y-3">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 bg-indigo-100 p-2 rounded-full text-indigo-600 mr-3">
+                                <span class="text-sm font-semibold">1</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium">Introduction (5 minutes)</h4>
+                                <p class="text-gray-700 text-sm">Brief introduction and overview of the interview process.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 bg-indigo-100 p-2 rounded-full text-indigo-600 mr-3">
+                                <span class="text-sm font-semibold">2</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium">Background Discussion (15 minutes)</h4>
+                                <p class="text-gray-700 text-sm">Questions about your experience, skills, and past projects.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 bg-indigo-100 p-2 rounded-full text-indigo-600 mr-3">
+                                <span class="text-sm font-semibold">3</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium">Design Challenge (25 minutes)</h4>
+                                <p class="text-gray-700 text-sm">Discussion of a design problem or portfolio review.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 bg-indigo-100 p-2 rounded-full text-indigo-600 mr-3">
+                                <span class="text-sm font-semibold">4</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium">Q&A (15 minutes)</h4>
+                                <p class="text-gray-700 text-sm">Opportunity for you to ask questions about the role and company.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Practice Questions -->
+                <div>
+                    <h3 class="text-lg font-medium mb-2">Practice Interview Questions</h3>
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <button id="practice-question-btn" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 mb-3">
+                            Generate Practice Question
+                        </button>
+                        <div id="practice-question-container">
+                            <!-- Questions will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Interview Tips -->
+                <div>
+                    <h3 class="text-lg font-medium mb-2">Interview Tips</h3>
+                    <div class="p-4 bg-gray-50 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-3 rounded border border-gray-200">
+                            <h4 class="font-medium text-indigo-600 mb-1">Research the Company</h4>
+                            <p class="text-gray-700 text-sm">Understand TechGiant's products, values, and recent news to show your interest.</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border border-gray-200">
+                            <h4 class="font-medium text-indigo-600 mb-1">Prepare Your Portfolio</h4>
+                            <p class="text-gray-700 text-sm">Be ready to discuss your design process and the decisions behind your work.</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border border-gray-200">
+                            <h4 class="font-medium text-indigo-600 mb-1">Practice the STAR Method</h4>
+                            <p class="text-gray-700 text-sm">Structure answers with Situation, Task, Action, and Result for clarity.</p>
+                        </div>
+                        <div class="bg-white p-3 rounded border border-gray-200">
+                            <h4 class="font-medium text-indigo-600 mb-1">Prepare Thoughtful Questions</h4>
+                            <p class="text-gray-700 text-sm">Ask about team dynamics, design processes, and growth opportunities.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+                    <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Download Preparation Guide
+                    </button>
+                    <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                        Schedule Practice Interview
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold text-gradient">TalentAI</h3>
+                    <p class="text-gray-400">© 2025 TalentAI. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">Help Center</a>
+                    <a href="index.html" class="text-gray-400 hover:text-white transition">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/loader.js"></script>
+    <script src="js/ui-enhancements.js"></script>
+    <script src="js/candidate-portal.js"></script>
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

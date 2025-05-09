@@ -1,0 +1,100 @@
+/* Custom TalentAI Styles */
+.gradient-bg {
+    background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%);
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.feature-icon {
+    background: rgba(79, 70, 229, 0.1);
+    color: #4F46E5;
+}
+
+.text-gradient {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(90deg, #4F46E5, #7C3AED);
+}
+
+.skill-tag {
+    background-color: rgba(79, 70, 229, 0.1);
+    color: #4F46E5;
+}
+
+.job-card:hover {
+    border-color: #4F46E5;
+    transform: translateY(-2px);
+}
+
+.sidebar-active {
+    background-color: rgba(79, 70, 229, 0.1);
+    color: #4F46E5;
+    border-left: 3px solid #4F46E5;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+
+/* Mobile menu transition */
+.mobile-menu {
+    transition: all 0.3s ease-in-out;
+    max-height: 0;
+    overflow: hidden;
+}
+
+.mobile-menu.active {
+    max-height: 1000px;
+}
+
+/* Page Loader */
+#pageLoader {
+    transition: opacity 0.3s ease-out;
+}
+
+/* Back to Top Button */
+#backToTop {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Success Toast */
+#successToast {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Hero Spotlight Effect */
+.hero-spotlight {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    animation: pulse 1s ease-out forwards;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}

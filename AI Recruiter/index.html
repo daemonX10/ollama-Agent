@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TalentAI - AI-powered recruitment platform with multi-agent technology to match candidates with jobs. Reduce bias, streamline hiring, and find top talent efficiently.">
+    <meta name="keywords" content="ai recruitment, hiring platform, talent ai, job matching, ai hiring, recruitment technology">
+    <meta name="author" content="TalentAI">
+    <meta property="og:title" content="TalentAI - AI-Powered Recruitment Platform">
+    <meta property="og:description" content="Our AI-powered platform streamlines hiring, reduces bias, and matches the right talent to the right roles with unprecedented precision.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80">
+    <meta property="og:url" content="https://www.talentai.com">
+    <meta property="og:type" content="website">    <title>TalentAI - AI-Powered Recruitment Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <style>
+        /* Custom Styles */
+        .gradient-bg {
+            background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%);
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .feature-icon {
+            background: rgba(79, 70, 229, 0.1);
+            color: #4F46E5;
+        }
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            background-image: linear-gradient(90deg, #4F46E5, #7C3AED);
+        }
+        .skill-tag {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: #4F46E5;
+        }
+        .job-card:hover {
+            border-color: #4F46E5;
+            transform: translateY(-2px);
+        }
+        .sidebar-active {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: #4F46E5;
+            border-left: 3px solid #4F46E5;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        
+        /* Mobile menu transition */
+        .mobile-menu {
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .mobile-menu.active {
+            max-height: 1000px;
+        }    </style>
+</head>
+<body class="font-sans antialiased text-gray-800 bg-gray-50">
+    <!-- Page Loader -->
+    <div id="pageLoader" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-600 border-solid"></div>
+            <span class="text-indigo-600 mt-4 text-xl font-semibold">Loading TalentAI...</span>
+        </div>
+    </div>    <!-- Navigation -->
+    <nav id="common-header" class="bg-white shadow-sm fixed w-full z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">            <a href="index.html" class="flex items-center">
+                <i class="fas fa-brain text-indigo-600 text-3xl mr-2"></i>
+                <span class="text-2xl font-bold text-gradient">TalentAI</span>
+            </a>
+            <div class="hidden md:flex space-x-8">                <a href="#how-it-works" class="nav-link header-nav-link text-gray-600 hover:text-indigo-600 transition">How It Works</a>
+                <a href="#features" class="nav-link header-nav-link text-gray-600 hover:text-indigo-600 transition">Features</a>
+                <a href="#testimonials" class="nav-link header-nav-link text-gray-600 hover:text-indigo-600 transition">Testimonials</a>
+                <a href="#pricing" class="nav-link header-nav-link text-gray-600 hover:text-indigo-600 transition">Pricing</a>
+                <a href="#blog" class="nav-link header-nav-link text-gray-600 hover:text-indigo-600 transition">Blog</a>
+            </div>            <div class="flex items-center space-x-4">
+                <a href="login.html" class="header-nav-link text-gray-700 hover:text-indigo-600 transition">Log In</a>
+                <a href="signup.html" class="header-nav-link bg-indigo-600 text-white px-5 py-2 rounded-md hover:bg-indigo-700 transition">Sign Up</a>
+                <button id="mobile-menu-button" class="md:hidden text-gray-700 focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu (hidden by default) -->
+        <div id="mobile-menu" class="mobile-menu bg-white shadow-lg md:hidden">
+            <div class="px-4 py-2 space-y-2">                <a href="#how-it-works" class="block py-2 text-gray-600 hover:text-indigo-600 transition">How It Works</a>
+                <a href="#features" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Features</a>
+                <a href="#testimonials" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Testimonials</a>
+                <a href="#pricing" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Pricing</a>
+                <a href="#blog" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Blog</a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <a href="candidate-portal-new.html" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Candidate Portal</a>
+                <a href="recruiter-portal.html" class="block py-2 text-gray-600 hover:text-indigo-600 transition">Recruiter Portal</a>
+            </div>
+        </div>
+    </nav>    <!-- Hero Section -->
+    <section id="hero" class="pt-28 pb-20 md:pt-36 md:pb-24">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0 animate-fade-in">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                        Transform Recruitment With <span class="text-gradient">Multi-Agent AI</span>
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8">Our AI-powered platform streamlines hiring, reduces bias, and matches the right talent to the right roles with unprecedented precision.</p>
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <a href="candidate-portal-new.html" class="gradient-bg text-white text-center px-8 py-3 rounded-md hover:opacity-90 transition">Find Jobs</a>
+                        <a href="recruiter-portal.html" class="bg-white border border-indigo-600 text-indigo-600 text-center px-8 py-3 rounded-md hover:bg-indigo-50 transition">Post a Job</a>
+                        <button class="bg-gray-100 text-gray-800 text-center px-8 py-3 rounded-md hover:bg-gray-200 transition" id="requestDemoButton">Request Demo</button>
+                    </div>
+                </div>
+        <div class="md:w-1/2 animate-fade-in delay-200">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="AI Recruitment Platform" class="rounded-lg shadow-xl mx-auto">
+                </div>
+            </div>
+        </div>
+    </section>    <!-- Stats Bar -->
+    <section class="bg-white py-10 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="animate-fade-in">
+                    <p class="text-3xl font-bold text-indigo-600">10K+</p>
+                    <p class="text-gray-600">Active Jobs</p>
+                </div>
+                <div class="animate-fade-in delay-100">
+                    <p class="text-3xl font-bold text-indigo-600">2.5M+</p>
+                    <p class="text-gray-600">Candidates</p>
+                </div>
+                <div class="animate-fade-in delay-200">
+                    <p class="text-3xl font-bold text-indigo-600">5K+</p>
+                    <p class="text-gray-600">Companies</p>
+                </div>
+                <div class="animate-fade-in delay-300">
+                    <p class="text-3xl font-bold text-indigo-600">85%</p>
+                    <p class="text-gray-600">Placement Rate</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Partners Section -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800">Trusted by Leading Companies</h2>
+            </div>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+                <!-- Company Logos (using Font Awesome for demo) -->
+                <div class="flex flex-col items-center">
+                    <i class="fab fa-microsoft text-gray-400 text-4xl mb-2"></i>
+                    <span class="text-sm text-gray-600">Microsoft</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <i class="fab fa-apple text-gray-400 text-4xl mb-2"></i>
+                    <span class="text-sm text-gray-600">Apple</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <i class="fab fa-google text-gray-400 text-4xl mb-2"></i>
+                    <span class="text-sm text-gray-600">Google</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <i class="fab fa-amazon text-gray-400 text-4xl mb-2"></i>
+                    <span class="text-sm text-gray-600">Amazon</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <i class="fab fa-facebook text-gray-400 text-4xl mb-2"></i>
+                    <span class="text-sm text-gray-600">Meta</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <i class="fab fa-slack text-gray-400 text-4xl mb-2"></i>
+                    <span class="text-sm text-gray-600">Slack</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16 animate-fade-in">
+                <h2 class="text-3xl font-bold mb-4">How TalentAI Works</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Our multi-agent AI system simplifies the entire recruitment process from job posting to final hire.</p>
+            </div>
+            
+            <!-- Process Steps -->
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-10 md:space-y-0 md:space-x-6">
+                <!-- Step 1 -->
+                <div class="flex flex-col items-center max-w-xs text-center animate-fade-in">
+                    <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-file-alt text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">1. Create Job</h3>
+                    <p class="text-gray-600">Our AI helps craft unbiased job descriptions and identifies key requirements.</p>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="flex flex-col items-center max-w-xs text-center animate-fade-in delay-100">
+                    <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-user-check text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">2. AI Screening</h3>
+                    <p class="text-gray-600">Multiple AI agents analyze resumes and identify top candidates with matching skill sets.</p>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="flex flex-col items-center max-w-xs text-center animate-fade-in delay-200">
+                    <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-video text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">3. Video Interviews</h3>
+                    <p class="text-gray-600">AI-assisted video interviews with smart analysis and skill assessment.</p>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="flex flex-col items-center max-w-xs text-center animate-fade-in delay-300">
+                    <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-handshake text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">4. Intelligent Hiring</h3>
+                    <p class="text-gray-600">Data-driven recommendations to make the best hiring decisions.</p>
+                </div>
+            </div>
+              <!-- Process Flow Diagram -->
+            <div class="mt-16 bg-white p-8 rounded-lg shadow-md animate-fade-in">
+                <h3 class="text-xl font-semibold mb-6 text-center">The Multi-Agent System</h3>
+                <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
+                    <div class="text-center p-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-robot text-2xl text-indigo-600 mb-2"></i>
+                        <h4 class="font-semibold">Resume Parser Agent</h4>
+                        <p class="text-sm text-gray-600">Extracts key information from resumes</p>
+                    </div>
+                    <i class="fas fa-long-arrow-alt-right text-indigo-400 transform rotate-90 md:rotate-0"></i>
+                    <div class="text-center p-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-brain text-2xl text-indigo-600 mb-2"></i>
+                        <h4 class="font-semibold">Matching Agent</h4>
+                        <p class="text-sm text-gray-600">Ranks candidates against job requirements</p>
+                    </div>
+                    <i class="fas fa-long-arrow-alt-right text-indigo-400 transform rotate-90 md:rotate-0"></i>
+                    <div class="text-center p-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:shadow-md transition-all duration-300">
+                        <i class="fas fa-comments text-2xl text-indigo-600 mb-2"></i>
+                        <h4 class="font-semibold">Interview Agent</h4>
+                        <p class="text-sm text-gray-600">Conducts and analyzes video interviews</p>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <img src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="AI Recruitment Dashboard" class="rounded-lg shadow-lg w-full object-cover" style="max-height: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16 animate-fade-in">
+                <h2 class="text-3xl font-bold mb-4">Powerful AI Features</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Our platform combines cutting-edge artificial intelligence with human-centered design.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">                <!-- Feature 1 -->
+                <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 card-hover animate-fade-in feature-card">
+                    <div class="w-14 h-14 rounded-full feature-icon flex items-center justify-center mb-4">
+                        <i class="fas fa-brain text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">AI Matching</h3>
+                    <p class="text-gray-600">Smart algorithms match candidates to jobs based on skills, experience, and cultural fit.</p>
+                </div>
+                  <!-- Feature 2 -->
+                <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 card-hover animate-fade-in delay-100 feature-card">
+                    <div class="w-14 h-14 rounded-full feature-icon flex items-center justify-center mb-4">
+                        <i class="fas fa-balance-scale text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Bias Reduction</h3>
+                    <p class="text-gray-600">AI-powered tools to identify and reduce unconscious bias in job descriptions and screening.</p>
+                </div>
+                  <!-- Feature 3 -->
+                <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 card-hover animate-fade-in delay-200 feature-card">
+                    <div class="w-14 h-14 rounded-full feature-icon flex items-center justify-center mb-4">
+                        <i class="fas fa-video text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Video Interviews</h3>
+                    <p class="text-gray-600">Record, analyze, and score video interviews with AI-assisted evaluation.</p>
+                </div>
+                  <!-- Feature 4 -->
+                <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 card-hover animate-fade-in feature-card">
+                    <div class="w-14 h-14 rounded-full feature-icon flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-line text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Advanced Analytics</h3>
+                    <p class="text-gray-600">Comprehensive recruitment metrics and insights to optimize your hiring process.</p>
+                </div>
+                  <!-- Feature 5 -->
+                <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 card-hover animate-fade-in delay-100 feature-card">
+                    <div class="w-14 h-14 rounded-full feature-icon flex items-center justify-center mb-4">
+                        <i class="fas fa-comments text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">AI Chatbots</h3>
+                    <p class="text-gray-600">24/7 candidate engagement and automated Q&A for applicants and recruiters.</p>
+                </div>
+                  <!-- Feature 6 -->
+                <div class="bg-white p-6 rounded-lg shadow-md transition-all duration-300 card-hover animate-fade-in delay-200 feature-card">
+                    <div class="w-14 h-14 rounded-full feature-icon flex items-center justify-center mb-4">
+                        <i class="fas fa-users text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Team Collaboration</h3>
+                    <p class="text-gray-600">Seamless tools for hiring team feedback, notes, and collaborative decisions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16 animate-fade-in">
+                <h2 class="text-3xl font-bold mb-4">What Our Users Say</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Hear from recruiters and candidates who've transformed their hiring experience.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-white p-6 rounded-lg shadow-md animate-fade-in">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-500 flex">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="ml-2 text-gray-600">5.0</p>
+                    </div>
+                    <p class="text-gray-600 mb-6">"TalentAI cut our time-to-hire by 60% and improved the quality of our candidates. The AI matching is incredibly accurate."</p>                    <div class="flex items-center">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="Sarah Johnson" class="w-12 h-12 rounded-full object-cover">
+                        <div class="ml-3">
+                            <h4 class="font-semibold">Sarah Johnson</h4>
+                            <p class="text-sm text-gray-600">HR Director, TechCorp</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="bg-white p-6 rounded-lg shadow-md animate-fade-in delay-100">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-500 flex">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="ml-2 text-gray-600">5.0</p>
+                    </div>
+                    <p class="text-gray-600 mb-6">"As a job seeker, I love how the platform suggests jobs that actually match my skills. I found my dream role in just two weeks!"</p>                    <div class="flex items-center">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="Michael Chen" class="w-12 h-12 rounded-full object-cover">
+                        <div class="ml-3">
+                            <h4 class="font-semibold">Michael Chen</h4>
+                            <p class="text-sm text-gray-600">Software Engineer</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="bg-white p-6 rounded-lg shadow-md animate-fade-in delay-200">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-500 flex">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p class="ml-2 text-gray-600">4.5</p>
+                    </div>
+                    <p class="text-gray-600 mb-6">"The diversity analytics helped us identify bias in our hiring process. We've improved our inclusivity metrics by 45% in six months."</p>                    <div class="flex items-center">
+                        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80" alt="Priya Patel" class="w-12 h-12 rounded-full object-cover">
+                        <div class="ml-3">
+                            <h4 class="font-semibold">Priya Patel</h4>
+                            <p class="text-sm text-gray-600">DEI Manager, Global Finance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>    <!-- Pricing -->
+    <section id="pricing" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16 animate-fade-in">
+                <h2 class="text-3xl font-bold mb-4">Simple, Transparent Pricing</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Choose the plan that works for your recruitment needs.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Starter Plan -->
+                <div class="bg-white p-8 rounded-lg border border-gray-200 flex flex-col animate-fade-in relative">
+                    <h3 class="text-xl font-semibold mb-2">Starter</h3>
+                    <p class="text-gray-600 mb-6">For small businesses or startups</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold">$99</span>
+                        <span class="text-gray-600">/month</span>
+                    </div>
+                    <ul class="mb-8 flex-grow">
+                        <li class="flex items-center mb-3">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Up to 5 active job postings</span>
+                        </li>
+                        <li class="flex items-center mb-3">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Basic AI screening</span>
+                        </li>
+                        <li class="flex items-center mb-3">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Video interviews</span>
+                        </li>
+                        <li class="flex items-center mb-3">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Email support</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="bg-indigo-600 text-white text-center py-3 rounded-md hover:bg-indigo-700 transition">Get Started</a>
+                </div>
+                
+                <!-- Professional Plan -->
+                <div class="bg-indigo-600 p-8 rounded-lg shadow-lg flex flex-col transform scale-105 animate-fade-in delay-100 relative">
+                    <div class="absolute -top-4 right-8 bg-yellow-400 text-indigo-900 px-3 py-1 rounded-full text-sm font-semibold">POPULAR</div>
+                    <h3 class="text-xl font-semibold mb-2 text-white">Professional</h3>
+                    <p class="text-indigo-200 mb-6">For growing teams</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-white">$299</span>
+                        <span class="text-indigo-200">/month</span>
+                    </div>
+                    <ul class="mb-8 flex-grow">
+                        <li class="flex items-center mb-3 text-white">
+                            <i class="fas fa-check text-green-300 mr-2"></i>
+                            <span>Up to 20 active job postings</span>
+                        </li>
+                        <li class="flex items-center mb-3 text-white">
+                            <i class="fas fa-check text-green-300 mr-2"></i>
+                            <span>Advanced AI matching</span>
+                        </li>
+                        <li class="flex items-center mb-3 text-white">
+                            <i class="fas fa-check text-green-300 mr-2"></i>
+                            <span>Video interviews with analysis</span>
+                        </li>
+                        <li class="flex items-center mb-3 text-white">
+                            <i class="fas fa-check text-green-300 mr-2"></i>
+                            <span>Basic analytics dashboard</span>
+                        </li>
+                        <li class="flex items-center mb-3 text-white">
+                            <i class="fas fa-check text-green-300 mr-2"></i>
+                            <span>Priority support</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="bg-white text-indigo-600 text-center py-3 rounded-md hover:bg-indigo-50 transition">Get Started</a>
+                </div>
+                
+                <!-- Enterprise Plan -->
+                <div class="bg-white p-8 rounded-lg border border-gray-200 flex flex-col animate-fade-in delay-200 relative">
+                    <h3 class="text-xl font-semibold mb-2">Enterprise</h3>
+                    <p class="text-gray-600 mb-6">For large organizations</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold">Custom</span>
+                    </div>
+                    <ul class="mb-8 flex-grow">
+                        <li class="flex items-center mb-3">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Unlimited job postings</span>
+                        </li>
+                        <li class="flex items-center mb-3">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Multi-agent AI screening</span>
+                        </li>
+                        <li class="flex items-center mb-3">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Advanced video assessments</span>
+                        </li>
+                        <li class="flex items-center mb-3">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Full analytics suite</span>
+                        </li>
+                        <li class="flex items-center mb-3">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>API access</span>
+                        </li>
+                        <li class="flex items-center mb-3">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>Dedicated account manager</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="bg-gray-800 text-white text-center py-3 rounded-md hover:bg-gray-900 transition" id="contactSalesButton">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Blog Posts Section -->
+    <section id="blog" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">Latest Insights</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Stay updated with the latest trends in AI recruitment and talent acquisition.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Blog Post 1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Blog Post" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <p class="text-indigo-600 text-sm font-semibold mb-2">AI TRENDS</p>
+                        <h3 class="text-xl font-bold mb-2">How Multi-Agent AI is Transforming Recruitment</h3>
+                        <p class="text-gray-600 mb-4">Learn how multiple AI agents working together are changing the way companies hire top talent.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">June 15, 2025</span>
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Blog Post 2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
+                    <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Blog Post" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <p class="text-indigo-600 text-sm font-semibold mb-2">BEST PRACTICES</p>
+                        <h3 class="text-xl font-bold mb-2">5 Ways to Reduce Bias in Your Hiring Process</h3>
+                        <p class="text-gray-600 mb-4">Practical strategies for creating a more equitable recruitment process using AI-powered tools.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">May 28, 2025</span>
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Blog Post 3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
+                    <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Blog Post" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <p class="text-indigo-600 text-sm font-semibold mb-2">CASE STUDY</p>
+                        <h3 class="text-xl font-bold mb-2">How TechCorp Reduced Time-to-Hire by 60%</h3>
+                        <p class="text-gray-600 mb-4">An in-depth look at how a leading tech company revolutionized their recruitment process with TalentAI.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">May 10, 2025</span>
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-10">
+                <a href="#" class="inline-block bg-white border border-indigo-600 text-indigo-600 px-6 py-3 rounded-md hover:bg-indigo-50 transition">View All Articles</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="gradient-bg py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold text-white mb-6 animate-fade-in">Ready to Transform Your Recruitment?</h2>
+            <p class="text-xl text-indigo-100 mb-8 max-w-3xl mx-auto animate-fade-in delay-100">Join thousands of companies that have revolutionized their hiring process with TalentAI.</p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in delay-200">
+                <button class="bg-white text-indigo-600 px-8 py-3 rounded-md hover:bg-indigo-50 transition" id="footerDemoButton">Request Demo</button>
+                <a href="#features" class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-md hover:bg-white hover:bg-opacity-10 transition">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-4 text-gradient">TalentAI</h3>
+                    <p class="text-gray-400 mb-4">Transforming recruitment with multi-agent AI technology.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
+                        <li><a href="#features" class="text-gray-400 hover:text-white transition">Features</a></li>
+                        <li><a href="#pricing" class="text-gray-400 hover:text-white transition">Pricing</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- For Recruiters -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">For Recruiters</h4>
+                    <ul class="space-y-2">
+                        <li><a href="recruiter-portal.html" class="text-gray-400 hover:text-white transition">Post a Job</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Search Candidates</a></li>
+                        <li><a href="#pricing" class="text-gray-400 hover:text-white transition">Pricing Plans</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Recruiter Resources</a></li>
+                        <li><a href="#testimonials" class="text-gray-400 hover:text-white transition">Success Stories</a></li>
+                    </ul>
+                </div>
+                
+                <!-- For Candidates -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">For Candidates</h4>
+                    <ul class="space-y-2">
+                        <li><a href="candidate-portal-new.html" class="text-gray-400 hover:text-white transition">Find Jobs</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Create Profile</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Career Resources</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Interview Tips</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Video Resume Help</a></li>
+                    </ul>
+                </div>
+            </div>
+              <div class="border-t border-gray-700 mt-10 pt-10 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400">© 2025 TalentAI. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">Accessibility</a>
+                </div>
+            </div>
+            
+            <!-- Newsletter Signup -->
+            <div class="mt-10 pt-8 border-t border-gray-700">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="text-lg font-semibold text-white mb-2">Subscribe to our newsletter</h3>
+                        <p class="text-gray-400">Get the latest news and updates on AI recruitment</p>
+                    </div>
+                    <div class="w-full md:w-auto">
+                        <form class="flex flex-col sm:flex-row gap-2" id="newsletterForm">
+                            <input type="email" placeholder="Your email address" class="px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <button type="button" id="newsletterSignup" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Demo Request Modal (hidden by default) -->
+    <div id="demoModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity">
+                <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+            </div>
+            
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-calendar-check text-indigo-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Request a Demo</h3>
+                            <div class="mt-4">                                <form id="demoForm">
+                                    <div class="mb-4">
+                                        <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                        <input type="text" id="name" name="name" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border" required>
+                                        <span id="nameError" class="text-red-500 text-xs hidden">Please enter your full name</span>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="email" class="block text-sm font-medium text-gray-700">Work Email</label>
+                                        <input type="email" id="email" name="email" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border" required>
+                                        <span id="emailError" class="text-red-500 text-xs hidden">Please enter a valid email address</span>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="company" class="block text-sm font-medium text-gray-700">Company</label>
+                                        <input type="text" id="company" name="company" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 border" required>
+                                        <span id="companyError" class="text-red-500 text-xs hidden">Please enter your company name</span>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="role" class="block text-sm font-medium text-gray-700">Your Role</label>
+                                        <select id="role" name="role" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                                            <option value="">Select role</option>
+                                            <option value="hr">HR Manager</option>
+                                            <option value="recruiter">Recruiter</option>
+                                            <option value="hiring-manager">Hiring Manager</option>
+                                            <option value="executive">Executive</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                        <span id="roleError" class="text-red-500 text-xs hidden">Please select your role</span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="submitDemoRequest" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Request Demo
+                    </button>
+                    <button type="button" id="cancelDemoRequest" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>    <!-- Back to Top Button -->
+    <button id="backToTop" class="fixed bottom-8 right-8 bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-indigo-700">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Success Toast Notification (hidden by default) -->
+    <div id="successToast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg transform transition-transform duration-300 translate-y-[-100px] opacity-0">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toastMessage">Operation successful!</span>
+        </div>
+    </div>    <!-- Scripts -->
+    <script>
+        // Show Toast Notification
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('successToast');
+            document.getElementById('toastMessage').textContent = message;
+            
+            // Show the toast
+            toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            // Hide after duration
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-100px]', 'opacity-0');
+            }, duration);
+        }
+        
+        // Back to Top Button
+        const backToTopButton = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.remove('opacity-100', 'visible');
+                backToTopButton.classList.add('opacity-0', 'invisible');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+        });
+        
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    window.scrollTo({
+                        top: target.offsetTop - 80,  // Offset for fixed header
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    if (mobileMenu.classList.contains('active')) {
+                        mobileMenu.classList.remove('active');
+                    }
+                }
+            });
+        });
+        
+        // Demo Modal Functionality
+        const demoModal = document.getElementById('demoModal');
+        const requestDemoButton = document.getElementById('requestDemoButton');
+        const footerDemoButton = document.getElementById('footerDemoButton');
+        const cancelDemoRequest = document.getElementById('cancelDemoRequest');
+        const submitDemoRequest = document.getElementById('submitDemoRequest');
+        
+        function openDemoModal() {
+            demoModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+        
+        function closeDemoModal() {
+            demoModal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Allow scrolling
+        }
+        
+        requestDemoButton.addEventListener('click', openDemoModal);
+        footerDemoButton.addEventListener('click', openDemoModal);
+        cancelDemoRequest.addEventListener('click', closeDemoModal);
+        
+        // Close modal when clicking outside the modal content
+        demoModal.addEventListener('click', (e) => {
+            if (e.target === demoModal) {
+                closeDemoModal();
+            }
+        });
+          submitDemoRequest.addEventListener('click', () => {
+            // Form validation
+            let isValid = true;
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const companyInput = document.getElementById('company');
+            const roleInput = document.getElementById('role');
+            
+            // Reset error messages
+            document.querySelectorAll('.text-red-500').forEach(el => el.classList.add('hidden'));
+            
+            // Validate name
+            if (!nameInput.value.trim()) {
+                document.getElementById('nameError').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailInput.value.trim() || !emailRegex.test(emailInput.value)) {
+                document.getElementById('emailError').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            // Validate company
+            if (!companyInput.value.trim()) {
+                document.getElementById('companyError').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            // Validate role
+            if (!roleInput.value) {
+                document.getElementById('roleError').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Create success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded';
+                successDiv.innerHTML = `<p class="font-medium">Demo request submitted!</p>
+                                       <p class="text-sm">Thank you ${nameInput.value}. One of our representatives will contact you at ${emailInput.value} shortly.</p>`;
+                
+                // Replace form with success message
+                const formParent = document.getElementById('demoForm').parentNode;
+                formParent.innerHTML = '';
+                formParent.appendChild(successDiv);
+                  // Show success toast
+                showToast(`Demo request submitted! We'll contact you soon.`, 4000);
+                
+                // Auto close after 1.5 seconds
+                setTimeout(() => {
+                    closeDemoModal();
+                    // Reset form for future use
+                    document.getElementById('demoForm').reset();
+                }, 1500);
+            }
+        });
+          // Contact Sales button
+        const contactSalesButton = document.getElementById('contactSalesButton');
+        if (contactSalesButton) {
+            contactSalesButton.addEventListener('click', () => {
+                openDemoModal();
+            });
+        }
+        
+        // Newsletter Signup
+        const newsletterSignup = document.getElementById('newsletterSignup');
+        if (newsletterSignup) {
+            newsletterSignup.addEventListener('click', () => {
+                const emailInput = newsletterSignup.previousElementSibling;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                if (emailInput.value.trim() && emailRegex.test(emailInput.value)) {
+                    showToast('Thank you for subscribing to our newsletter!');
+                    emailInput.value = '';
+                } else {
+                    showToast('Please enter a valid email address', 3000);
+                    emailInput.focus();
+                }            });
+        }    </script>    <script src="js/loader.js"></script>
+    <script src="js/ui-enhancements.js"></script>
+    <script src="js/header.js"></script>
+</body>
+</html>
