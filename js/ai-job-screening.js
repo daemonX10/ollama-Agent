@@ -1314,7 +1314,8 @@ class MatchingAgent {
         
         return percentageScore;
     }
-      calculateSkillsMatch(jobSkills, candidateSkills) {
+    
+    calculateSkillsMatch(jobSkills, candidateSkills) {
         let score = 0;
         const technicalSkills = jobSkills.technical || [];
         const softSkills = jobSkills.soft || [];
@@ -1345,11 +1346,9 @@ class MatchingAgent {
             (domainSkills.length * categoryWeights.domain);
         
         return {
-            score: score,
-            maxScore: maxPossibleScore > 0 ? maxPossibleScore : 1,
-            technicalMatches: techMatches.matches,
-            softMatches: softMatches.matches,
-            domainMatches: domainMatches.matches
+            score: matchCount,
+            possibleMatches: requiredSkills.length,
+            matches: matches
         };
     }
     
@@ -1913,40 +1912,6 @@ class ShortlistingAgent {
 
 // Communication Agent
 class CommunicationAgent {
-    async prepareEmailTemplates(shortlistedCandidates, jobAnalysis) {
-        // Simulate processing time
-        await this.simulateProcessing(1500);
-        
-        // Filter candidates to only high and medium priority
-        const candidatesToContact = shortlistedCandidates.filter(
-            candidate => candidate.priority === "High" || candidate.priority === "Medium"
-        );
-        
-        // Generate email templates
-        const template = this.selectEmailTemplate(candidatesToContact.length);
-        
-        // Track sent messages
-        const sent = candidatesToContact.length;
-        const failed = 0;
-        
-        // Record communication history
-        const communicationHistory = candidatesToContact.map(candidate => ({
-            candidateId: candidate.candidateId,
-            candidateName: candidate.candidateName,
-            emailSubject: `Interview Invitation: Your Application`,
-            emailPreview: this.generateEmailPreview(template, candidate),
-            sentTime: new Date().toISOString(),
-            status: 'prepared'
-        }));
-        
-        return {
-            sent: sent,
-            failed: failed,
-            templateUsed: template.name,
-            communicationHistory: communicationHistory
-        };
-    }
-    
     async sendInterviewRequests(shortlistedCandidates) {
         // Simulate processing time
         await this.simulateProcessing(1500);
@@ -2037,17 +2002,4 @@ The Recruitment Team`
 }
 
 // Export the Orchestrator for use in the main application
-if (typeof window !== 'undefined') {
-    // Browser environment
-    window.AgentOrchestrator = AgentOrchestrator;
-} else {
-    // Node.js environment
-    module.exports = {
-        AgentOrchestrator,
-        JDAnalysisAgent,
-        CVAnalysisAgent,
-        MatchingAgent,
-        ShortlistingAgent,
-        CommunicationAgent
-    };
-}
+window.AgentOrchestrator = AgentOrchestrator;
